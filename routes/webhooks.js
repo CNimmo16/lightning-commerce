@@ -2,12 +2,15 @@ const stripe = require('stripe')(process.env.STRIPESECRET);
 
 module.exports = ({ router }) => {
     router.post("/webhook/stripe", async (ctx, next) => {
-        console.log(ctx.headers)
         const sig = ctx.headers['stripe-signature'];
         const body = ctx.request.fields
         
+        console.log("signature is " + sig)
+        console.log("body is")
+        console.log(body)
+        
         let event = null;
-        const endpointSecret = "whsec_Jlf0Hkl7vAUiWcgz3jJDetFONygod6OY"
+        const endpointSecret = "whsec_Jlf0Hkl7vAUiWcgz3jJDetFONygod6OY";
 
         try {
             event = stripe.webhooks.constructEvent(body, sig, endpointSecret);
