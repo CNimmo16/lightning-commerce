@@ -119,7 +119,10 @@ module.exports = ({ router }) => {
                         shippingMethod: order.shippingMethod,
                     },
                     payment: {
-                        invoiceNumber: null,
+                        provider: "stripe",
+                        stripe: {
+                            paymentIntentId: foundIntent.id
+                        },
                         paymentCard: {
                             digits: null,
                             provider: null

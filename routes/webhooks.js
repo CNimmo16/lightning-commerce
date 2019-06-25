@@ -27,6 +27,8 @@ module.exports = ({ router }) => {
         if(event.type === "payment_intent.succeeded") {
             console.log(intent)
             const order = await Order.find({ "payment.stripe.paymentIntentId": intent.id })
+            console.log("==============")
+            console.log(intent.charges.data)
             // order.payment.paymentCard
             ctx.body = "successfully captured payment and sent order for fulfillment"
         } else if(event.type === "payment_intent.payment_failed") {
