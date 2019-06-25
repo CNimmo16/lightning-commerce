@@ -13,7 +13,7 @@ module.exports = ({ router }) => {
         }
         catch (err) {
             // invalid signature
-            ctx.status(400);
+            ctx.status = 400;
             return await next();
         }
         
