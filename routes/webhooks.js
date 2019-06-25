@@ -1,5 +1,7 @@
 const stripe = require('stripe')(process.env.STRIPESECRET);
 
+const Order = require('../models/order');
+
 module.exports = ({ router }) => {
     router.post("/webhook/stripe", async (ctx, next) => {
         
@@ -19,13 +21,15 @@ module.exports = ({ router }) => {
         // }
         // const intent = event.data.object
         
-        const intent = ctx.request.fields
+        const event = ctx.request.fields
+        const intent = event.data.object;
         
-        if(intent.type === "payment_intent.succeeded") {
+        if(event.type === "payment_intent.succeeded") {
             console.log(intent)
-            // intent.id 
+            const order = await Order.find({ "payment.stripe.paymentIntentId": intent.id })
+            // order.payment.paymentCard
             ctx.body = "successfully captured payment and sent order for fulfillment"
-        } else if(intent.type === "payment_intent.payment_failed") {
+        } else if(event.type === "payment_intent.payment_failed") {
             const message = intent.last_payment_error && intent.last_payment_error.message;
             console.log('Failed:', intent.id, message);
             ctx.body = "successfully acknowledged failed payment, contacting customer by email"
