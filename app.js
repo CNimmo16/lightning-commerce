@@ -64,17 +64,28 @@ const serve = require("koa-static");
 const mount = require("koa-mount");
 app.use(mount("/public", serve("./public")));
 
-// import route files
 const router = new Router()
-require('./routes/index')({ router: router });
+
+// webhook routes
+require('./routes/webhooks')({ router: router });
+
+// admin api routes
+const adminRouter = new Router({prefix: "/api/admin"});
+require('./routes/admin/products')({ router: adminRouter });
+require('./routes/admin/categories')({ router: adminRouter });
+require('./routes/admin/orders')({ router: adminRouter });
+require('./routes/admin/inventory')({ router: adminRouter });
+require('./routes/admin/images')({ router: adminRouter });
+
+// public api routes
 const apiRouter = new Router({prefix: "/api"});
-require('./routes/products')({ router: apiRouter });
-require('./routes/categories')({ router: apiRouter });
-require('./routes/orders')({ router: apiRouter });
-require('./routes/inventory')({ router: apiRouter });
-require('./routes/images')({ router: apiRouter });
+require('./routes/api')({ router: apiRouter });
+
+// view routes
+require('./routes/index')({ router: router });
 
 app.use(apiRouter.routes()).use(apiRouter.allowedMethods());
+app.use(adminRouter.routes()).use(adminRouter.allowedMethods());
 app.use(router.routes()).use(router.allowedMethods());
 
 const server = app.listen(process.env.PORT, () => {

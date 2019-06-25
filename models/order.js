@@ -2,10 +2,18 @@ const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
     date: { type: Date, default: Date.now },
-    products: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product"
+    items: [{
+        product: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Product"
+        },
+        quantity: Number
     }],
+    costs: {
+        subtotal: Number,
+        shipping: Number,
+        grandTotal: Number
+    },
     payment: {
         invoiceNumber: String,
         paymentCard: {
@@ -13,7 +21,7 @@ const orderSchema = new mongoose.Schema({
             provider: String
         },
         paymentStatus: String,
-        totalValue: Number
+        amount: Number
     },
     fulfillment: {
         orderStatus: String,

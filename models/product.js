@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
+    live: {
+        type: mongoose.Schema.Types.Boolean,
+        default: false
+    },
     content: {
         name: String,
         slug: String,

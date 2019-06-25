@@ -23,6 +23,7 @@
     "koa-send": "^5.0.0",
     "koa-static": "^5.0.0",
     "mongoose": "^5.6.0",
+    "stripe": "^7.3.0",
     "tmp": "^0.1.0"
   },
   "devDependencies": {
