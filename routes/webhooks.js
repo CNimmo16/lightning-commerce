@@ -21,11 +21,11 @@ module.exports = ({ router }) => {
         
         const intent = ctx.request.fields
         
-        if(event.type === "payment_intent.succeeded") {
+        if(intent.type === "payment_intent.succeeded") {
             console.log(intent)
             // intent.id 
             ctx.body = "successfully captured payment and sent order for fulfillment"
-        } else if(event.type === "payment_intent.payment_failed") {
+        } else if(intent.type === "payment_intent.payment_failed") {
             const message = intent.last_payment_error && intent.last_payment_error.message;
             console.log('Failed:', intent.id, message);
             ctx.body = "successfully acknowledged failed payment, contacting customer by email"
