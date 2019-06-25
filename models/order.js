@@ -15,10 +15,13 @@ const orderSchema = new mongoose.Schema({
         grandTotal: Number
     },
     payment: {
-        invoiceNumber: String,
+        provider: String,
+        stripe: {
+            paymentIntentId: String,
+        },
         paymentCard: {
             digits: Number,
-            provider: String
+            issuer: String
         },
         paymentStatus: String,
         amount: Number
