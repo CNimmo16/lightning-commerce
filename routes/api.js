@@ -111,12 +111,12 @@ module.exports = ({ router }) => {
                     items: orderItems,
                     costs: {
                         subtotal: order.subtotal,
-                        shipping: order.shippingMethod.cost,
+                        shipping: shippingMethod.cost,
                         grandTotal: order.total
                     },
                     fulfillment: {
                         orderStatus: "Pending payment",
-                        shippingMethod: order.shippingMethod,
+                        shippingMethod: shippingMethod,
                     },
                     payment: {
                         method: "card",

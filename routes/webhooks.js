@@ -37,8 +37,6 @@ module.exports = ({ router }) => {
             order.fulfillment.orderStatus = "Paid, awaiting fulfillment";
             await order.save()
             
-            // console.log("==============")
-            // console.log(intent.charges.data)
             ctx.body = "successfully captured payment and sent order for fulfillment"
         } else if(event.type === "payment_intent.payment_failed") {
             const message = intent.last_payment_error && intent.last_payment_error.message;

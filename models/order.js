@@ -28,7 +28,11 @@ const orderSchema = new mongoose.Schema({
     },
     fulfillment: {
         orderStatus: String,
-        shippingMethod: String,
+        shippingMethod: {
+            name: String,
+            cost: Number,
+            days: Array
+        }
     }
 });
 
