@@ -35,7 +35,7 @@ module.exports = ({ router }) => {
     // get all orders
     router.get("/orders", async (ctx, next) => {
         const perPage = 15
-        const options = { sort: {"fulfillment.orderStatus": "ascending", "date": "descending"}, skip: ctx.request.query.page*perPage, limit: perPage }
+        const options = { sort: {"date": "descending"}, skip: ctx.request.query.page*perPage, limit: perPage }
         const orders = await Order.find({}, null, options)
         const count = await Order.estimatedDocumentCount()
         const pages = Math.floor(count / perPage) + 1  
@@ -47,9 +47,29 @@ module.exports = ({ router }) => {
     
     // get orders that need fulfilled
     router.get("/orders/fulfillment", async (ctx, next) => {
-        const orders = await Order.find({ "fulfillment.orderStatus": "Awaiting fulfillment" })
+        let orders = await Order.find({ "fulfillment.orderStatus": "Awaiting fulfillment" }).populate("items.product").exec()
+        // add data about remaining time before fulfillment deadline
+        orders = orders.map((order) => {
+            order = order.toObject()
+            const targetUnix = new Date(order.date).getTime() + order.fulfillment.shippingMethod.targetHours * 3600000
+            const remaining = (targetUnix - Date.now());
+            if(Math.abs(remaining) > 3600000) {
+                order.timeRemaining = Math.floor(remaining / 3600000) + " hours"
+            } else {
+                order.timeRemaining = Math.floor(remaining / 60000) + " minutes";
+            }
+            return order
+        })
         ctx.body = {
             orders: orders
+        }
+    })
+    
+    // get order by id
+    router.get("/orders/:id", async (ctx, next) => {
+        const order = await Order.findById(ctx.params.id).populate("items.product").exec()
+        ctx.body = {
+            order: order
         }
     })
 };
