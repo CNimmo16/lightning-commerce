@@ -34,7 +34,7 @@ module.exports = ({ router }) => {
             }
             order.payment.invoiceURL = charge.receipt_url;
             order.payment.paymentStatus = "paid";
-            order.fulfillment.orderStatus = "Paid, awaiting fulfillment";
+            order.fulfillment.orderStatus = "Awaiting fulfillment";
             await order.save()
             
             ctx.body = "successfully captured payment and sent order for fulfillment"

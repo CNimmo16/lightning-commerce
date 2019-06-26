@@ -48,7 +48,8 @@ const orderSchema = new mongoose.Schema({
         shippingMethod: {
             name: String,
             cost: Number,
-            days: Array
+            days: Array,
+            targetHours: Number
         },
         shippingAddress: {
             firstName: String,

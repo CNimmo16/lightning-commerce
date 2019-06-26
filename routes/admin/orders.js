@@ -7,22 +7,49 @@ const fs = require('fs-extra')
 const path = require("path")
 
 module.exports = ({ router }) => {
+    // Get shipping methods
+    router.get("/shipping-methods", async (ctx, next) => {
+        const methods = await ShippingMethod.find()
+        ctx.body = {
+            methods: methods
+        }
+    });
+    
     // Add shipping method
-    router.post("/orders/methods", async (ctx, next) => {
+    router.post("/shipping-methods", async (ctx, next) => {
         const method = await ShippingMethod.create(ctx.request.fields)
         ctx.body = method
     });
     
-    // get orders
+    // Delete shipping method
+    router.del("/shipping-methods/:id", async (ctx, next) => {
+        try {
+            await ShippingMethod.findByIdAndRemove(ctx.params.id)
+            ctx.body = "Successfully deleted product"
+        }
+        catch(err) {
+            throw new Error("Unknown error deleting product");
+        }
+    })
+    
+    // get all orders
     router.get("/orders", async (ctx, next) => {
         const perPage = 15
-        const options = { sort: {"content.name": "descending"}, skip: ctx.request.query.page*perPage, limit: perPage }
+        const options = { sort: {"fulfillment.orderStatus": "ascending", "date": "descending"}, skip: ctx.request.query.page*perPage, limit: perPage }
         const orders = await Order.find({}, null, options)
         const count = await Order.estimatedDocumentCount()
         const pages = Math.floor(count / perPage) + 1  
         ctx.body = {
             orders,
             pages
+        }
+    })
+    
+    // get orders that need fulfilled
+    router.get("/orders/fulfillment", async (ctx, next) => {
+        const orders = await Order.find({ "fulfillment.orderStatus": "Awaiting fulfillment" })
+        ctx.body = {
+            orders: orders
         }
     })
 };
