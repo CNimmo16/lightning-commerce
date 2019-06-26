@@ -108,6 +108,10 @@ module.exports = ({ router }) => {
             expectedTotal += shippingMethod.cost;
             if(foundIntent.client_secret === order.paymentIntent.client_secret && order.total === expectedTotal && foundIntent.amount === expectedTotal * 100) {
                 const newOrder = await Order.create({
+                    customer: {
+                        email: order.email,
+                        billingAddress: order.billingAddress
+                    },
                     items: orderItems,
                     costs: {
                         subtotal: order.subtotal,
@@ -117,6 +121,7 @@ module.exports = ({ router }) => {
                     fulfillment: {
                         orderStatus: "Pending payment",
                         shippingMethod: shippingMethod,
+                        shippingAddress: order.shippingAddress
                     },
                     payment: {
                         method: "card",

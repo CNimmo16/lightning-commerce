@@ -2,6 +2,23 @@ const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
     date: { type: Date, default: Date.now },
+    customer: {
+        email: String,
+        billingAddress: {
+            firstName: String,
+            lastName: String,
+            address: String,
+            company: String,
+            flatNumber: String,
+            city: String,
+            country: {
+                name: String,
+                code: String
+            },
+            postcode: String,
+            phone: String
+        },
+    },
     items: [{
         product: {
             type: mongoose.Schema.Types.ObjectId,
@@ -32,7 +49,21 @@ const orderSchema = new mongoose.Schema({
             name: String,
             cost: Number,
             days: Array
-        }
+        },
+        shippingAddress: {
+            firstName: String,
+            lastName: String,
+            address: String,
+            company: String,
+            flatNumber: String,
+            city: String,
+            country: {
+                name: String,
+                code: String
+            },
+            postcode: String,
+            phone: String
+        },
     }
 });
 

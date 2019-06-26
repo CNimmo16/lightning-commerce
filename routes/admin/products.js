@@ -50,7 +50,6 @@ module.exports = ({ router }) => {
     
     // fetch all products, option to filter
     router.get("/products", async (ctx, next) => {
-        console.log("getting")
         const categories = ctx.request.query.category
         const priceRange = ctx.request.query.price
         const query = {};
