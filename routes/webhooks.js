@@ -26,10 +26,19 @@ module.exports = ({ router }) => {
         
         if(event.type === "payment_intent.succeeded") {
             console.log(intent)
-            const order = await Order.find({ "payment.stripe.paymentIntentId": intent.id })
-            console.log("==============")
-            console.log(intent.charges.data)
-            // order.payment.paymentCard
+            const order = await Order.findOne({ "payment.transactionId": intent.id })
+            const charge = intent.charges.data.find((charge) => { return charge.paid === true })
+            order.payment.paymentCard = {
+                brand: charge.payment_method_details.card.brand,
+                last4: charge.payment_method_details.card.last4
+            }
+            order.payment.invoiceURL = charge.receipt_url;
+            order.payment.paymentStatus = "paid";
+            order.fulfillment.orderStatus = "Paid, awaiting fulfillment";
+            await order.save()
+            
+            // console.log("==============")
+            // console.log(intent.charges.data)
             ctx.body = "successfully captured payment and sent order for fulfillment"
         } else if(event.type === "payment_intent.payment_failed") {
             const message = intent.last_payment_error && intent.last_payment_error.message;
