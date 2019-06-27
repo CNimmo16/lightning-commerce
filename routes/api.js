@@ -36,15 +36,20 @@ module.exports = ({ router }) => {
         }
     })
     
-    // fetch single product by id
-    router.get("/products/:id", async (ctx, next) => {
+    // fetch single product by slug and category
+    router.get("/products/:category/:product", async (ctx, next) => {
         try {
-            const product = await Product.findById(ctx.params.id)
+            const product = await Product.findOne({
+                "category.slug": ctx.params.category,
+                "content.slug": ctx.params.product
+            })
             if(!product) {
                 ctx.status = 404;
                 return next()
             } else {
-                ctx.body = product;
+                ctx.body = {
+                    product: product
+                }
             }
         }
         catch(err) {
@@ -88,18 +93,18 @@ module.exports = ({ router }) => {
         ctx.body = "successfully updated payment intent amount";
     })
     
-    // Create new order and confirm payment can be finalised
-    router.post("/orders", async (ctx, next) => {
+    // Price manipulation prevention
+    router.post("/orders/validate", async (ctx, next) => {
         const order = ctx.request.fields.order
         const foundIntent = await stripe.paymentIntents.retrieve(order.paymentIntent.id);
         
         // calculate expected cost based on cart items
         let orderItems = []
         const getItems = order.items.map(async (cartItem) => {
-            const product = await Product.findById(cartItem._id);
+            const product = await Product.findById(cartItem.product._id);
             // check that there is enough stock to fulfill order
             if(product.inventory.totalStock - product.inventory.inFulfillment < cartItem.quantity) {
-                ctx.throw(500)
+                throw new Error("Too little stock for order to be fulfilled")
             }
             orderItems.push({
                 product: product,
@@ -116,9 +121,29 @@ module.exports = ({ router }) => {
         // cancel order if amounts do not match or payment intents are not identical
         if(expectedTotal * 100 !== foundIntent.amount || foundIntent.client_secret !== order.paymentIntent.client_secret) {
             await stripe.paymentIntents.cancel(foundIntent.id, { cancellation_reason: "fraudulent" })
-            ctx.throw(500)
+            throw new Error("Error with order pricing validation")
+        } else {
+            ctx.body = "Order valid"
         }
-
+    })
+    
+    // Create new order and confirm payment can be finalised
+    router.post("/orders", async (ctx, next) => {
+        const order = ctx.request.fields.order
+        const foundIntent = await stripe.paymentIntents.retrieve(order.paymentIntent.id);
+        let orderItems = []
+        const getItems = order.items.map(async (cartItem) => {
+            const product = await Product.findById(cartItem.product._id);
+            // check that there is enough stock to fulfill order
+            if(product.inventory.totalStock - product.inventory.inFulfillment < cartItem.quantity) {
+                throw new Error("Too little stock for order to be fulfilled")
+            }
+            orderItems.push({
+                product: product,
+                quantity: cartItem.quantity
+            })
+        });
+        await Promise.all(getItems)
         const newOrder = await Order.create({
             customer: {
                 email: order.email,
@@ -127,12 +152,12 @@ module.exports = ({ router }) => {
             items: orderItems,
             costs: {
                 subtotal: order.subtotal,
-                shipping: shippingMethod.cost,
+                shipping: order.shippingMethod.cost,
                 grandTotal: order.total
             },
             fulfillment: {
                 orderStatus: "Pending payment",
-                shippingMethod: shippingMethod,
+                shippingMethod: order.shippingMethod,
                 shippingAddress: order.shippingAddress
             },
             payment: {
