@@ -15,10 +15,15 @@ Lightning Commerce is headless at heart, but that doesn't mean it can't do more.
 ## Roadmap
 There's a long way to go, but here are some of the main features planned for Lightning Commerce
 ### Reaching Production Ready
-- Orders are not currently fulfillable
+- Make orders fulfillable
+- Make product images rearrangeable, option to add new images
 - Make categories editable
+- Add admin authentication
 ### Functionality
 - Add more payment gateways (Stripe is currently the only payment gateway option)
+- Add sub-categories, with unlimited depth folder structure similar to Magento
+- Add collections - Create a collection containing items from multiple categories, and easily pre-populate collections using filters eg. create a "Summer 2019" collection based on a date range.
+- Add variants - Add variant option to each product, create global variant templates which are suggested when editing/creating a product
 ### Bug fixes
 - Locate and fix demo storefront checkout issues - rapidly adding and removing orders from cart can result in a payment manipulation false positive server-side, leading to order rejection.
 
