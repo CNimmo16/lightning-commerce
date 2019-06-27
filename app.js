@@ -76,6 +76,7 @@ require('./routes/admin/categories')({ router: adminRouter });
 require('./routes/admin/orders')({ router: adminRouter });
 require('./routes/admin/inventory')({ router: adminRouter });
 require('./routes/admin/images')({ router: adminRouter });
+require('./routes/admin/customers')({ router: adminRouter });
 
 // public api routes
 const apiRouter = new Router({prefix: "/api"});

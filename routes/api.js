@@ -1,6 +1,7 @@
 const Category = require('../models/category');
 const Product = require('../models/product');
 const Order = require('../models/order');
+const Customer = require('../models/customer');
 const ShippingMethod = require('../models/shippingMethod');
 
 const cors = require('@koa/cors');
@@ -90,68 +91,80 @@ module.exports = ({ router }) => {
     // Create new order and confirm payment can be finalised
     router.post("/orders", async (ctx, next) => {
         const order = ctx.request.fields.order
-        // does server side validation to ensure payment is for the correct amount based on item costs
         const foundIntent = await stripe.paymentIntents.retrieve(order.paymentIntent.id);
+        
         // calculate expected cost based on cart items
-        let expectedTotal = 0
         let orderItems = []
-        for(const cartItem of order.items) {
+        const getItems = order.items.map(async (cartItem) => {
             const product = await Product.findById(cartItem._id);
+            // check that there is enough stock to fulfill order
+            if(product.inventory.totalStock - product.inventory.inFulfillment < cartItem.quantity) {
+                ctx.throw(500)
+            }
             orderItems.push({
                 product: product,
                 quantity: cartItem.quantity
             })
-            expectedTotal += product.inventory.price * cartItem.quantity
-        }
+        });
+        await Promise.all(getItems)
+        let expectedTotal = orderItems.reduce((accumulator, item) => {
+            return accumulator + item.product.inventory.price * item.quantity
+        }, 0)
         const shippingMethod = await ShippingMethod.findOne({name: order.shippingMethod.name})
-        if(shippingMethod) {
-            expectedTotal += shippingMethod.cost;
-            if(foundIntent.client_secret === order.paymentIntent.client_secret && order.total === expectedTotal && foundIntent.amount === expectedTotal * 100) {
-                const newOrder = await Order.create({
-                    customer: {
-                        email: order.email,
-                        billingAddress: order.billingAddress
-                    },
-                    items: orderItems,
-                    costs: {
-                        subtotal: order.subtotal,
-                        shipping: shippingMethod.cost,
-                        grandTotal: order.total
-                    },
-                    fulfillment: {
-                        orderStatus: "Pending payment",
-                        shippingMethod: shippingMethod,
-                        shippingAddress: order.shippingAddress
-                    },
-                    payment: {
-                        method: "card",
-                        provider: "stripe",
-                        transactionId: foundIntent.id,
-                        paymentCard: {
-                            last4: null,
-                            brand: null
-                        },
-                        invoiceURL: null,
-                        paymentStatus: "pending",
-                        amount: foundIntent.amount
-                    },
-                })
-                ctx.body = "order created, awaiting payment confirmation to move to fulfillment"
-            } else {
-                // cancel order if amounts do not match
-                await stripe.paymentIntents.cancel(foundIntent.id, {
-                    cancellation_reason: "fraudulent"
-                })
-                ctx.throw(500)
-            }
-        } else {
-            // cancel order if shipping method isn't in database
-            await stripe.paymentIntents.cancel(foundIntent.id, {
-                cancellation_reason: "fraudulent"
-            })
+        expectedTotal += shippingMethod.cost;
+        
+        // cancel order if amounts do not match or payment intents are not identical
+        if(expectedTotal * 100 !== foundIntent.amount || foundIntent.client_secret !== order.paymentIntent.client_secret) {
+            await stripe.paymentIntents.cancel(foundIntent.id, { cancellation_reason: "fraudulent" })
             ctx.throw(500)
         }
 
-        
+        const newOrder = await Order.create({
+            customer: {
+                email: order.email,
+                billingAddress: order.billingAddress
+            },
+            items: orderItems,
+            costs: {
+                subtotal: order.subtotal,
+                shipping: shippingMethod.cost,
+                grandTotal: order.total
+            },
+            fulfillment: {
+                orderStatus: "Pending payment",
+                shippingMethod: shippingMethod,
+                shippingAddress: order.shippingAddress
+            },
+            payment: {
+                method: "card",
+                provider: "stripe",
+                transactionId: foundIntent.id,
+                paymentCard: {
+                    last4: null,
+                    brand: null
+                },
+                invoiceURL: null,
+                paymentStatus: "pending",
+                amount: foundIntent.amount
+            },
+        })
+        // reduce product stock
+        const updateStock = orderItems.map(async (item) => {
+            item.product.inventory.inFulfillment += item.quantity
+            await item.product.save()
+        });
+        await Promise.all(updateStock)
+        // create or update customer
+        let customer = await Customer.findOneAndUpdate({ "contact.email": order.email }, { $push: { orders: newOrder } })
+        if(!customer) {
+            customer = await Customer.create({
+                billingAddress: order.billingAddress,
+                contact: {
+                    email: order.email
+                },
+                orders: [newOrder]
+            })
+        }
+        ctx.body = "order created, awaiting payment confirmation to move to fulfillment"
     })
 };
