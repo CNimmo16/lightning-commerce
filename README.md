@@ -6,6 +6,12 @@ Check out the demo [here](https://lightning-commerce.herokuapp.com/).
 Lightning Commerce is not currently production ready, but the demo gives you a good idea of what it's about and how it works. Opening the demo you will arrive on the *glass*, the customer facing website. Please note that this site, as well as the admin backoffice, are not yet mobile responsive.
 
 You can switch from the glass to the backoffice via the link at the top right, and from the backoffice to the glass via the link under the site logo
+
+## Directory Structure
+The lightning commerce admin dashboard is built with VueJS. The folder structure places all server logic and webpack generated static assets in the /server directory, while the uncompressed files are kept in the /client directory. Running "npm run build" in the client directory will generate the production ready assets in the /server/views and /server/public directories. When deploying to a server the /client directory should not be deployed.
+
+For the demo project the backend and frontend are deployed to the same server, so the /client/views directory also includes the generated static files for the customer facing storefront. To view the uncompressed vue project for this storefront, please see the [lightning-storefront](https://github.com/CNimmo16/lightning-storefront) repo.
+
 ## Headless or Traditional?
 Lightning Commerce is headless at heart, but that doesn't mean it can't do more. Eventually, Lightning Commerce will provide three configurations depending on the desired customisability:
 1. Full headless - With the planned Lightning Commerce Javascipt library, content will be easy to fetch, and will support complex queries. The checkout process will be a piece of cake to implement, with zero server-side coding needed.
