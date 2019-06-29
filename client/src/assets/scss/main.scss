@@ -1,0 +1,41 @@
+@import "_variables";
+
+body {
+    margin: 0;
+}
+
+#app {
+    font-family: 'IBM Plex Sans', serif;
+    font-size: 100%;
+    color: #0c0c0c;
+}
+
+span {
+    font-family: 'IBM Plex Sans', serif;
+}
+
+h1, h2, h3, h4, h5 {
+    font-weight: 400;
+}
+
+.el-alert__title {
+    font-size: 1em !important;
+}
+
+.el-pagination {
+    margin-top: 30px;
+}
+
+.title {
+    &--primary {
+        font-size: 2.5em;
+        font-weight: 500;
+    }
+    &--secondary {
+        font-size: 1.6em;
+    }
+}
+
+a {
+    text-decoration: none;
+}
