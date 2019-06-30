@@ -3,9 +3,13 @@ Lightning Commerce is a working prototype for a blazing fast ecommerce CMS, buil
 ## Check out the demo
 Check out the demo [here](https://lightning-commerce.herokuapp.com/).
 ## Navigating the demo
-Lightning Commerce is not currently production ready, but the demo gives you a good idea of what it's about and how it works. Opening the demo you will arrive on the *glass*, the customer facing website. Please note that this site, as well as the admin backoffice, are not yet mobile responsive.
+Lightning Commerce is not currently production ready, but the demo gives you a good idea of what it's about and how it works. 
 
-You can switch from the glass to the backoffice via the link at the top right, and from the backoffice to the glass via the link under the site logo. Most of the backoffice is fully functional, while the glass is just a simple demo application to show how payment processing is handled with Lightning Commerce. Go to t-shirts, add a product to the cart, and complete the checkout process with the demo bank card suggested on the checkout page. The completed order will then be added to the backoffice fulfillment wizard.
+**Please note that the demo application is deployed on a Heroku free dyno for cost reasons, so will need 10 seconds or so to start up the server when launched after being idle for over 30 minutes.** Yeah yeah, I know - so much for "lightning" commerce! Got to appreciate the irony, but after this initial delay Lightning Commerce will start living up to its name!
+
+Opening the demo you will arrive on the *glass*, the customer facing website. 
+
+You can switch from the glass to the backoffice via the link at the top right, and from the backoffice to the glass via the link under the site logo. Most of the backoffice is fully functional, while the glass is just a simple demo application (and not mobile responsive) to show how payment processing is handled with Lightning Commerce. Go to t-shirts, add a product to the cart, and complete the checkout process with the demo bank card suggested on the checkout page. The completed order will then be added to the backoffice fulfillment wizard.
 
 ## Directory Structure
 The lightning commerce admin dashboard is built with VueJS. The folder structure places all server logic and webpack generated static assets in the /server directory, while the uncompressed files are kept in the /client directory. Running "npm run build" in the client directory will generate the production ready assets in the /server/views and /server/public directories. When deploying to a server the /client directory should not be deployed.
