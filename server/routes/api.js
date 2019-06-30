@@ -69,8 +69,9 @@ module.exports = ({ router }) => {
     
     // Create payment intent as soon as customer proceeds to checkout stage
     router.post("/orders/intent", async (ctx, next) => {
+        const amount = Math.round(ctx.request.fields.amount)
         const paymentIntent = await stripe.paymentIntents.create({
-            amount: ctx.request.fields.amount,
+            amount: amount,
             currency: ctx.request.fields.currency,
         });
         ctx.body = {
