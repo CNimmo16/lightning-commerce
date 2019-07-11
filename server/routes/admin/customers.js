@@ -14,5 +14,13 @@ module.exports = ({ router }) => {
             pages
         }
     })
+
+    // get customer by id
+    router.get("/customers/:id", async (ctx, next) => {
+        const customer = await Customer.findById(ctx.params.id).populate("orders").exec()
+        ctx.body = {
+            customer: customer
+        }
+    })
     
 }

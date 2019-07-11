@@ -64,6 +64,14 @@ module.exports = ({ router }) => {
             orders: orders
         }
     })
+
+    // fulfill order
+    router.put("/orders/:id", async (ctx, next) => {
+        const order = await Order.findById(ctx.params.id).populate("items.product").exec()
+        order.fulfillment.orderStatus = ctx.request.fields.status;
+        order.save();
+        ctx.body = "Fulfilled order"
+    })
     
     // get order by id
     router.get("/orders/:id", async (ctx, next) => {

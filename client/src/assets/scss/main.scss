@@ -18,6 +18,18 @@ h1, h2, h3, h4, h5 {
     font-weight: 400;
 }
 
+.el-page-header {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 25px 20px;
+    margin-bottom: 25px;
+}
+
+.el-alert {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
 .el-alert__title {
     font-size: 1em !important;
 }
@@ -26,13 +38,32 @@ h1, h2, h3, h4, h5 {
     margin-top: 30px;
 }
 
+.section {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    margin: 25px 0;
+}
+
 .title {
     &--primary {
         font-size: 2.5em;
         font-weight: 500;
+        margin: 10px 0 0 0;
     }
     &--secondary {
         font-size: 1.6em;
+        margin: 20px 0;
+    }
+    &--tertiary {
+        font-size: 1.3em;
+        font-weight: 500;
+        margin: 10px 0 20px 0;
+    }
+    &--backgrounded {
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
     }
 }
 

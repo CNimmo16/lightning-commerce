@@ -25,7 +25,7 @@
                 <el-input type="textarea" v-model="productForm.description" placeholder="Write a detailed description" />
             </el-form-item>
             <el-form-item label="Product images">
-                <ImageUpload @finishedUpload="updateProductImages($event)" />
+                <ImageUpload @finishedUpload="updateProductImages($event)" :showlist="true"  />
             </el-form-item>
             <h3>Pricing and fulfillment</h3>
             <el-form-item label="Price" prop="price">

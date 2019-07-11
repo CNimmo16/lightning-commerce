@@ -4,6 +4,7 @@ import Dashboard from './views/Dashboard.vue'
 
 // customer components
 import CustomersMain from './views/Customers/Index.vue'
+import Customer from './views/Customers/Customer.vue'
 // product components
 import ProductsMain from './views/Products/Index.vue'
 import NewProduct from './views/Products/New.vue'
@@ -39,6 +40,12 @@ export default new Router({
             path: "/customers",
             name: "customers",
             component: CustomersMain
+        },
+        {
+            path: "/customers/:id",
+            name: "customer",
+            component: Customer,
+            props: true
         },
         // product routes
         {

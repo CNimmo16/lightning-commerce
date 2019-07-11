@@ -1,45 +1,47 @@
 <template>
     <div class="setup">
-        <h1 class="title title--primary">Setup</h1>
-        <el-row style="max-width: 1200px">
-            <el-col :span="8">
-                <router-link to="/setup/shipping">
+        <section class="section">
+            <h1 class="title title--primary">Setup</h1>
+            <el-row style="max-width: 1200px">
+                <el-col :span="8">
+                    <router-link to="/setup/shipping">
+                        <div class="grid-content">
+                            <i class="el-icon-truck"></i>
+                            <div>
+                                Shipping
+                                <p>Manage how you ship orders to customers</p>
+                            </div>
+                        </div>
+                    </router-link>
+                </el-col>
+                
+                <el-col :span="8">
                     <div class="grid-content">
-                        <i class="el-icon-truck"></i>
+                        <i class="el-icon-bank-card"></i>
                         <div>
-                            Shipping
-                            <p>Manage how you ship orders to customers</p>
+                            Payment Providers
+                            <p>Take control of how your users pay for their purchases</p>
                         </div>
                     </div>
-                </router-link>
-            </el-col>
-            
-            <el-col :span="8">
-                <div class="grid-content">
-                    <i class="el-icon-bank-card"></i>
-                    <div>
-                        Payment Providers
-                        <p>Take control of how your users pay for their purchases</p>
+                </el-col>
+                
+                <el-col :span="8">
+                    <div class="grid-content">
+                        <i class="el-icon-coin"></i>
+                        <div>
+                            Currencies
+                            <p>Take your business global by adding additional currencies</p>
+                        </div>
                     </div>
-                </div>
-            </el-col>
-            
-            <el-col :span="8">
-                <div class="grid-content">
-                    <i class="el-icon-coin"></i>
-                    <div>
-                        Currencies
-                        <p>Take your business global by adding additional currencies</p>
-                    </div>
-                </div>
-            </el-col>
-        </el-row>
+                </el-col>
+            </el-row>
+        </section>
     </div>
 </template>
 
 <style lang="scss">
     .grid-content {
-        background: rgb(217, 236, 255);
+        background: $palette-background-blue;
         border-radius: 15px;
         display: flex;
         padding: 14px 40px 10px 40px;

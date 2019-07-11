@@ -1,6 +1,6 @@
 <template>
     <div class="fulfillment-wizard">
-        <h1 class="title title--primary">Fulfillment Wizard</h1>
+        <h1 class="title title--primary title--backgrounded">Fulfillment Wizard</h1>
         
         <div class="empty"  v-if="orders.length === 0">
             <p>No outstanding orders awaiting fulfillment. Sit back and relax!</p>
@@ -11,9 +11,9 @@
                     <span>{{ currentOrder }} orders fulfilled</span>
                     <span>{{ orders.length - currentOrder }} orders remaining</span>
                 </p>
-                <el-progress :percentage="currentOrder / orders.length * 100"></el-progress>
+                <el-progress :percentage="(currentOrder / orders.length * 100)" :show-text="false"></el-progress>
             </div>
-            <el-carousel indicator-position="none" arrow="never" :autoplay="false" height="750px" ref="order-carousel" :loop="false">
+            <el-carousel indicator-position="none" arrow="never" :autoplay="false" height="1300px" ref="order-carousel" :loop="false">
                 <el-carousel-item v-for="(order, index) in orders" :key="index">
                     <div class="order-item">
                         <el-row>
@@ -171,23 +171,41 @@
                 
             },
             previousOrder() {
+                this.loading = true;
                 if(this.currentOrder > 0) {
-                    this.$refs["order-carousel"].prev()
-                    this.currentOrder --
-                    this.orders[this.currentOrder].fulfillment.orderStatus = "Awaiting fulfillment"
+                    this.$axios.put("/orders/" + this.orders[this.currentOrder-1]._id, {
+                        status: "Awaiting fulfillment"
+                    })
+                    .then((res) => {
+                        this.$refs["order-carousel"].prev()
+                        this.currentOrder --;
+                        this.orders[this.currentOrder].fulfillment.orderStatus = "Awaiting fulfillment"
+                        this.loading = false;
+                    })
+                    .catch(() => {
+                        this.$message.error("Couldn't return to previous order. Please contact your system administrator.");
+                        this.loading = false;
+                    })
                 }
             },
             nextOrder() {
                 if(this.currentOrder < this.orders.length - 1) {
                     this.loading = true;
-                    window.setTimeout(() => {
+                    this.$axios.put("/orders/" + this.orders[this.currentOrder]._id, {
+                        status: "Fulfilled"
+                    })
+                    .then((res) => {
                         this.orders[this.currentOrder].fulfillment.orderStatus = "Fulfilled"
                         this.loading = false;
-                    }, 1000)
-                    window.setTimeout(() => {
-                        this.$refs["order-carousel"].next()
-                        this.currentOrder ++
-                    }, 1400)
+                        window.setTimeout(() => {
+                            this.$refs["order-carousel"].next()
+                            this.currentOrder ++
+                        }, 400)
+                    })
+                    .catch(() => {
+                        this.$message.error("Couldn't fulfill order. Please contact your system administrator.");
+                        this.loading = false;
+                    })
                 }
             }
         },
@@ -203,7 +221,6 @@
             this.$emit("set-loading");
             this.$axios.get("/orders/fulfillment")
             .then((res) => {
-                console.log(res.data.orders)
                 this.orders = res.data.orders;
                 this.$emit("stop-loading")
             })
@@ -223,17 +240,16 @@
     }
 
     .wizard {
-        background-color: rgb(217, 236, 255);
+        background-color: $palette-background-blue;
         border-radius: 15px;
         max-width: 1100px;
-        margin: 30px;
-        padding: 30px;
+        margin-top: 25px;
         .overview {
             background-color: #fff;
             border-radius: 10px;
             margin: 4px;
             padding: 10px 15px;
-            margin-bottom: 30px;
+            margin-bottom: 22px;
             p {
                 margin: 10px 0; 
                 font-size: 1.05em;
@@ -242,6 +258,7 @@
                 justify-content: space-between;
             }
             .el-progress {
+                min-height: 8px;
                 margin-bottom: 12px;
             }
         }

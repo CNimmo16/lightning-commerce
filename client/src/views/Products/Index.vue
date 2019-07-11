@@ -1,43 +1,47 @@
 <template>
     <div class="products">
-        <h1 class="title title--primary">Products</h1>
-        <h3 class="title title--secondary">Filter products</h3>
-        <div class="options">
-            <div class="filters">
-                <el-form :inline="true">
-                    <el-form-item label="Category">
-                        <el-select v-model="selectedCategories" multiple placeholder="Select categories" @change="getProducts()">
-                            <el-option
-                            v-for="(category, index) in categories"
-                            :key="index"
-                            :label="category.name"
-                            :value="category._id">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="Price range">
-                        <el-slider
-                        @change="getProducts()"
-                        v-model="priceRange"
-                        range
-                        :step="5"
-                        :max="500">
-                        </el-slider>
-                    </el-form-item>
-                </el-form>
+        <h1 class="title title--primary title--backgrounded">Products</h1>
+        <section class="section">
+            <h3 class="title title--tertiary">Filter products</h3>
+            <div class="options">
+                <div class="filters">
+                    <el-form :inline="true">
+                        <el-form-item label="Category">
+                            <el-select v-model="selectedCategories" multiple placeholder="Select categories" @change="getProducts()">
+                                <el-option
+                                v-for="(category, index) in categories"
+                                :key="index"
+                                :label="category.name"
+                                :value="category._id">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="Price range">
+                            <el-slider
+                            @change="getProducts()"
+                            v-model="priceRange"
+                            range
+                            :step="5"
+                            :max="500">
+                            </el-slider>
+                        </el-form-item>
+                    </el-form>
+                </div>
+                <router-link to="/products/new">
+                    <el-button rounded type="success">New Product</el-button>
+                </router-link>
             </div>
-            <router-link to="/products/new">
-                <el-button rounded type="success">New Product</el-button>
-            </router-link>
-        </div>
-        <ProductGrid :products="products" v-if="products.length > 0" @reload="getProducts()" />
-        <div v-else style="width: 100%; display: flex; justify-content: center; padding-top: 70px;"><p class="title title--secondary">Whoops, no products found</p></div>
-        <el-pagination
-            layout="prev, pager, next"
-            @current-change="page = $event - 1"
-            :hide-on-single-page=true
-            :page-count="totalPages">
-        </el-pagination>
+        </section>
+        <section class="section">
+            <ProductGrid :products="products" v-if="products.length > 0" @reload="getProducts()" />
+            <div v-else style="width: 100%; display: flex; justify-content: center; padding-top: 70px;"><p class="title title--secondary">Whoops, no products found</p></div>
+            <el-pagination
+                layout="prev, pager, next"
+                @current-change="page = $event - 1"
+                :hide-on-single-page=true
+                :page-count="totalPages">
+            </el-pagination>
+        </section>
     </div>
 </template>
 
@@ -81,7 +85,6 @@
                 // send request
                 this.$axios.get("/products" + queryString)
                 .then((res) => {
-                    console.log(res)
                     if(setCategories) {
                         this.categories = res.data.categories;
                         this.selectedCategories = res.data.categories.map((category) => {return category._id});
@@ -101,12 +104,16 @@
 </script>
 
 <style lang="scss">
+    main {
+        background-color: $palette-background-blue;
+    }
+
     .options {
         display: flex;
         justify-content: space-between;
-        margin: 20px 0;
         .el-form-item {
             margin-right: 40px;
+            margin-bottom: 7px;
         }
         .el-slider {
             width: 200px;

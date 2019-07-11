@@ -50,7 +50,8 @@
 
 <style lang="scss">
     .app-container {
-        height: 100vh;
+        margin: 0;
+        padding: 0;
     }
     a {
         color: black;
@@ -69,8 +70,10 @@
         }
     }
     .el-main {
-        min-height: 100%;
-        padding: 45px 35px !important;
+        min-height: 100vh;
+        padding: 25px 35px !important;
+        margin: 30px;
+        border-radius: 15px;
     }
     .el-loading-spinner {
         .el-loading-text {

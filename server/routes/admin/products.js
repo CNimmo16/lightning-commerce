@@ -109,7 +109,8 @@ module.exports = ({ router }) => {
             } else {
                 updateWith = {
                     name: category.name,
-                    slug: category.slug
+                    slug: category.slug,
+                    id: category._id
                 }
             }
         }
@@ -123,7 +124,50 @@ module.exports = ({ router }) => {
             return next()
         }
     })
-    
+
+    // add image to product
+    router.put("/products/:id/images", async (ctx, next) => {
+        const image = ctx.request.fields
+        const orig = image.tmpDir + "/" + image.filename
+        let dest = null
+        let ref = null
+        for(let i=0; i<10; i++) {
+            try {
+                if(i>0) {
+                    image.filename = image.filename + `(${i})`
+                }
+                dest = path.join(__dirname, "/../../public/assets/images/products/" + ctx.params.id + "/" + image.filename)
+                ref = "/public/assets/images/products/" + ctx.params.id + "/" + image.filename
+                await fs.move(orig, dest)
+                break;
+            }
+            catch {
+
+            }
+        }
+        // remove temporary directory
+        await fs.remove(image.tmpDir)
+        // wait until all promises are resolved
+        await Product.findByIdAndUpdate(ctx.params.id, { $push: { "content.images": {
+            filename: image.filename,
+            path: ref
+        }}})
+        ctx.body = "updated"
+    })
+
+    // remove image from product
+    router.del("/products/:id/images/:filename", async (ctx, next) => {
+        console.log("teh filename is")
+        console.log(ctx.params.filename)
+        const product = await Product.findById(ctx.params.id)
+        console.log(product.content.images)
+        const image = product.content.images.find((image) => { return image.filename == ctx.params.filename })
+        const loc = path.join(__dirname, "/../.." + image.path)
+        await fs.remove(loc)
+        await product.update({ $pull: { "content.images": { filename: image.filename }}})
+        ctx.body = "removed"
+    });
+
     router.del("/products/:id", async (ctx, next) => {
         try {
             await Product.findByIdAndRemove(ctx.params.id)

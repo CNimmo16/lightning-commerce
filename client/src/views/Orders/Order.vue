@@ -1,7 +1,7 @@
 <template>
     <div class="view-order">
         <div v-if="order">
-            <el-page-header @back="$router.push('/orders')" title="back to all orders" :content="'#' + order._id"></el-page-header>
+            <el-page-header @back="$router.push('/orders')" title="back to all orders" :content="'order #' + order._id.substr(0,5) + '...'"></el-page-header>
             <h1 class="title title--primary">Order <span style="color: #868686; font-size: 0.7em;">#{{ order._id }}</span></h1>
             <div class="order-item">
                 <el-row>
