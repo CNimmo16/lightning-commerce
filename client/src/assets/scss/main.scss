@@ -18,6 +18,10 @@ h1, h2, h3, h4, h5 {
     font-weight: 400;
 }
 
+p {
+    line-height: 1.5;
+}
+
 .el-page-header {
     background-color: #fff;
     border-radius: 12px;
@@ -69,4 +73,5 @@ h1, h2, h3, h4, h5 {
 
 a {
     text-decoration: none;
+    color: #409EFF;
 }

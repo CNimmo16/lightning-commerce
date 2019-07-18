@@ -1,6 +1,7 @@
 <template>
     <div class="setup">
         <section class="section">
+            <router-link to="/setup/wizard">Wizard</router-link>
             <h1 class="title title--primary">Setup</h1>
             <el-row style="max-width: 1200px">
                 <el-col :span="8">
@@ -26,13 +27,15 @@
                 </el-col>
                 
                 <el-col :span="8">
-                    <div class="grid-content">
-                        <i class="el-icon-coin"></i>
-                        <div>
-                            Currencies
-                            <p>Take your business global by adding additional currencies</p>
+                    <router-link to="/setup/currencies">
+                        <div class="grid-content">
+                            <i class="el-icon-coin"></i>
+                            <div>
+                                Currencies
+                                <p>Take your business global by adding additional currencies</p>
+                            </div>
                         </div>
-                    </div>
+                    </router-link>
                 </el-col>
             </el-row>
         </section>

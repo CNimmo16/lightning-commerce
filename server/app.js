@@ -1,96 +1,104 @@
 const   Koa     = require("koa"),
         app     = new Koa();
         
-const Router  = require("koa-router");
+const   Router  = require("koa-router"),
+        body    = require('koa-better-body'),
+        session = require('koa-session'),
+        passport = require('koa-passport'),
+        serve = require("koa-static"),
+        mount = require("koa-mount"),
+        path = require ("path");
 
-// bodyparser setup
-var body = require('koa-better-body')
-const formidable = require("formidable")
+// ==== KOA Middleware Setup ====
+    // body parser
+    app.use(body())
+    
+    app.use(async(ctx, next) => {
+        ctx.request.body = ctx.request.fields;
+        await next()
+    })
+    
+    // serve assets
+    app.use(mount("/public", serve(path.join(__dirname, "/public"))));
+    
+    // session
+    app.keys = ['whatever-comes-to-mind'];
+    app.use(session({}, app));
+    
+    // authentication
+    require('./auth');
+    app.use(passport.initialize());
+    app.use(passport.session());
 
-app.use(body())
-    // .use(body({
-    //     IncomingForm: new formidable.IncomingForm()
-    // }))
-    // .use(function * (next) {
-    //     console.log(this.request.files)
-    //     var form = new formidable.IncomingForm()
-    //     this.request.IncomingForm.parse(this.request.files, function(err, fields, files) {
-    // });
+// ==== Environment Config ====
+    require('dotenv').config({path: __dirname + '/process.env'})
 
-    //     yield next
-    // })
+// ==== Database Setup ====
+    const mongoose = require("mongoose");
+    mongoose.connect(process.env.DATABASE_URL);
+    let db = mongoose.connection;
+    db.on('error', console.error.bind(console, 'connection error:'));
 
-// environment config
-require('dotenv').config({path: __dirname + '/process.env'})
+// ==== Error Handling ====
+    app.use(async (ctx, next) => {
+        try {
+            await next();
+        } catch (err) {
+            console.error(err)
+            ctx.status = err.status || 500;
+            ctx.body = err.message;
+            ctx.app.emit('error', err, ctx);
+        }
+    });
 
-//db connection
-const mongoose = require("mongoose");
-mongoose.connect(process.env.DATABASE_URL);
-let db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
+// ==== Router Configuration ====
 
-//don't show the log when it is test
-if(process.env.NODE_ENV !== 'test') {
-    // Error logging
-    const logger = require("koa-logger");
-    app.use(logger())
-}
+    const router = new Router()
+    const adminRouter = new Router({prefix: "/api/admin"});
+    const apiRouter = new Router({prefix: "/api"});
+    
+    // webhook routes
+    require('./routes/webhooks')({ router: router });
+    
+    // admin api routes
+    require('./routes/admin/products')({ router: adminRouter });
+    require('./routes/admin/categories')({ router: adminRouter });
+    require('./routes/admin/orders')({ router: adminRouter });
+    require('./routes/admin/inventory')({ router: adminRouter });
+    require('./routes/admin/images')({ router: adminRouter });
+    require('./routes/admin/customers')({ router: adminRouter });
+    require('./routes/admin/currencies')({ router: adminRouter });
+    require('./routes/admin/auth')({ router: adminRouter });
+    
+    // public api routes
+    require('./routes/api')({ router: apiRouter });
+    
+    // view routes
+    require('./routes/index')({ router: router });
+    
+    app.use(apiRouter.routes()).use(apiRouter.allowedMethods());
+    app.use(adminRouter.routes()).use(adminRouter.allowedMethods());
+    app.use(router.routes()).use(router.allowedMethods());
+    
+// ==== Server Initialisation ====
 
-// enable cors DISABLE IN PRODUCTION
-// if(process.env.DEVELOPMENT === "true") {
-    // app.use(async (ctx, next) => {
-    //     ctx.set('Access-Control-Allow-Origin', '*');
-    //     ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    //     ctx.set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
-    //     return next();
-    // });
-// }
-
-// error handling
-app.use(async (ctx, next) => {
-    try {
-        await next();
-    } catch (err) {
-        console.error(err)
-        ctx.status = err.status || 500;
-        ctx.body = err.message;
-        ctx.app.emit('error', err, ctx);
-    }
-});
-
-
-// serve public assets
-const serve = require("koa-static");
-const mount = require("koa-mount");
-app.use(mount("/public", serve("./server/public")));
-
-const router = new Router()
-
-// webhook routes
-require('./routes/webhooks')({ router: router });
-
-// admin api routes
-const adminRouter = new Router({prefix: "/api/admin"});
-require('./routes/admin/products')({ router: adminRouter });
-require('./routes/admin/categories')({ router: adminRouter });
-require('./routes/admin/orders')({ router: adminRouter });
-require('./routes/admin/inventory')({ router: adminRouter });
-require('./routes/admin/images')({ router: adminRouter });
-require('./routes/admin/customers')({ router: adminRouter });
-
-// public api routes
-const apiRouter = new Router({prefix: "/api"});
-require('./routes/api')({ router: apiRouter });
-
-// view routes
-require('./routes/index')({ router: router });
-
-app.use(apiRouter.routes()).use(apiRouter.allowedMethods());
-app.use(adminRouter.routes()).use(adminRouter.allowedMethods());
-app.use(router.routes()).use(router.allowedMethods());
-
-const server = app.listen(process.env.PORT, () => {
+const server = app.listen(process.env.PORT, async() => {
     console.log(`Example app listening on port ${process.env.PORT}!`);
+    // create setup object if doesn't exist
+    const Setup = require(path.join(__dirname, '/models/setup'));
+    const setupObject = await Setup.findOne({})
+    if(!setupObject) {
+        Setup.create({
+            primaryCurrency: {
+                name: "United States Dollar",
+                symbol: "USD"
+            },
+            usableCurrencies: [{
+                name: "United States Dollar",
+                symbol: "USD"
+            }],
+        })
+    }
 });
 
 module.exports = server;

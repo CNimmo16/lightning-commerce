@@ -59,16 +59,13 @@
             PlaceholderImage
         },
         methods: {
-            deleteProduct(product, index) {
-                console.log("deleting")
+            deleteProduct(product) {
                 this.$axios.delete("/products/" + product._id)
-                .then((res) => {
-                    console.log(res)
+                .then(() => {
                     this.$emit("reload")
                     this.$message.success("Permenantly deleted " + product.content.name)
                 })
-                .catch((err) => {
-                    console.log(err)
+                .catch(() => {
                     this.$message.error("Error deleting " + product.content.name + ". Please contact your system administrator.")
                 })
                 this.deleting = false;
@@ -78,11 +75,11 @@
                     toUpdate: 'live',
                     updateWith: live
                 })
-                .then((res) => {
+                .then(() => {
                     const message = live ? "Made live - Product is now visible and available to purchase on customer facing site. To reverse this action, click the slider again." : "Product removed from customer facing site. This item can no longer be added to cart. Any in-cart or completed orders are unaffected. You can reenable it at any time."
                     this.$message.success(message)
                 })
-                .catch((res) => {
+                .catch(() => {
                     this.$message.error("Failed to update product status")
                 })
             }

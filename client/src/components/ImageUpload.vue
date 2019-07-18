@@ -18,7 +18,7 @@
 <script>
     export default {
         name: "image-upload",
-        props: ["showlist"]
+        props: ["showlist"],
         methods: {
             finishedUpload(response) {
                 this.$emit('finishedUpload', response)
