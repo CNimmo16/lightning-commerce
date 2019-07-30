@@ -25,7 +25,7 @@
                     </div>
                 </el-card>
             </div>
-            <router-link to="/welcome/locales"><el-button type="primary" @click="next()" :loading="loading" :disabled="!gateway">Continue</el-button></router-link>
+            <router-link to="/welcome/locales"><el-button type="primary" :loading="loading" :disabled="!gateway">Continue</el-button></router-link>
         </section>
     </div>
 </template>
