@@ -5,6 +5,9 @@
                 <div class="logo">
                     <img src="@/assets/images/logo.png">
                     <a href="/"><el-button type="primary">Go to store</el-button></a>
+                    <form method="post" action="/admin/logout">
+                        <input type="submit" value="Logout">
+                    </form>
                 </div>
                 <Navbar />
             </el-aside>
@@ -52,9 +55,6 @@
     .app-container {
         margin: 0;
         padding: 0;
-    }
-    a {
-        color: black;
     }
     .el-aside {
         .logo {

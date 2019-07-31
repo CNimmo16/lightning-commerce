@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Register</title>
+    </head>
+    <body>
+        <h1>Welcome to Lightning Commerce</h1>
+        <h2>To begin setup, first create a password for the admin user</h2>
+        <form method="post" action="/admin/register">
+            <label for="username">Username</label>
+            <input id="username" type="text" value="admin" disabled required>
+            
+            <label for="email">Email address (for password reset)</label>
+            <input id="email" type="email" name="email" required>
+            
+            <label for="password">Password</label>
+            <input id="password" type="password" name="password" required>
+            <div>Strength: 
+                <div id="meter">
+                    <div id="fill"></div>
+                </div>
+            </div>
+            <p id="warning">Password not strong enough</p>
+            
+            <label for="password-confirm">Confirm password</label>
+            <input id="password-confirm" type="password" name="password_confirm">
+            <p id="nomatch">Passwords don't match</p>
+            <button id="submit" disabled>Submit</button>
+        </form>
+    </body>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js" integrity="sha256-Znf8FdJF85f1LV0JmPOob5qudSrns8pLPZ6qkd/+F0o=" crossorigin="anonymous"></script>
+    
+    <script>
+        var listening = false
+
+        var passElem = document.getElementById("password")
+        var confirmElem = document.getElementById("password-confirm")
+    
+        function testScore() {
+            var score = zxcvbn(passElem.value).score
+            document.getElementById("fill").setAttribute("score", score)
+            if(listening === true) {
+                testMatch()
+                if(score < 3) {
+                    document.getElementById("warning").style.display = "block"
+                    return false
+                } else {
+                    document.getElementById("warning").style.display = "none"
+                    return true
+                }
+            }
+        }
+        
+        function testMatch() {
+            if(passElem.value !== confirmElem.value) {
+                document.getElementById("nomatch").style.display = "block"
+                return false
+            } else {
+                document.getElementById("nomatch").style.display = "none"
+                return true
+            }
+        }
+        
+        function setDisabled() {
+            if(testMatch() && testScore()) {
+                document.getElementById("submit").removeAttribute("disabled");
+            } else {
+                document.getElementById("submit").setAttribute("disabled", "");
+            }
+        }
+    
+        passElem.addEventListener("input", () => {
+            testScore()
+            setDisabled()
+        })
+        
+        passElem.addEventListener("blur", () => {
+            listening = true;
+            testScore()
+        })
+        
+        confirmElem.addEventListener("input", () => {
+            testMatch()
+            setDisabled()
+        })
+    </script>
+    
+    <style>
+        body {
+            width: 450px;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        input {
+            display: block;
+            margin: 5px 0 13px 0;
+        }
+        #nomatch, #warning {
+            display: none;
+        }
+        #meter {
+            width: 250px;
+            height: 10px;
+            background-color: #eee;
+            position: relative;
+        }
+        #fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 0;
+            background-color: red;
+        }
+        #fill[score="1"] {
+            width: 25%;
+            background-color: red;
+        }
+        #fill[score="2"] {
+            width: 50%;
+            background-color: red;
+        }
+        #fill[score="3"] {
+            width: 75%;
+            background-color: orange;
+        }
+        #fill[score="4"] {
+            width: 100%;
+            background-color: green;
+        }
+    </style>
+</html>

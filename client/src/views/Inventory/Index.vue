@@ -123,7 +123,7 @@
             }
         },  
         methods: {
-            getRowClasses({row, rowIndex}) {
+            getRowClasses({row}) {
                 if(row.type === "increase") {
                     return "row-increase"
                 } else {

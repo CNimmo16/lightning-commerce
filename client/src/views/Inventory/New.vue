@@ -180,8 +180,8 @@
                 method: "get",
                 url: "/products"
             })
-            .then((res) => {
-                this.products = res.data.products.map((product) => { product.used = false; return product; });
+            .then(({data}) => {
+                this.products = data.products.map((product) => { product.used = false; return product; });
                 this.form.reason = this.form.type === "increase" ? "Delivery" : "Sale(s) through untracked avenue"
                 this.$emit("stop-loading")
             })
@@ -240,7 +240,7 @@
                         product.newAvailableStock = product.previousTotalStock + (product.change * sign);
                     })
                     this.$axios.post("/inventory", form)
-                    .then((res) => {
+                    .then(() => {
                         this.$message.success("Executed new stock adjustment - requested stock levels have been adjusted, and changes recorded")
                         this.$router.push("/inventory")
                     })

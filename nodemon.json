@@ -1,6 +1,0 @@
-{
-  "env": {
-    "DATABASEURL": "mongodb://root:z42extwbqjUexSX@ds343217.mlab.com:43217/lightning-commerce",
-    "PORT": "8080"
-  }
-}

@@ -18,6 +18,10 @@ h1, h2, h3, h4, h5 {
     font-weight: 400;
 }
 
+p {
+    line-height: 1.5;
+}
+
 .el-page-header {
     background-color: #fff;
     border-radius: 12px;
@@ -69,4 +73,32 @@ h1, h2, h3, h4, h5 {
 
 a {
     text-decoration: none;
+    color: #409EFF;
+}
+
+@keyframes flash {
+    0% {
+        box-shadow: 0 0 3px 0 #f4faff;
+        transform: translateY(13px);
+    }
+    100% {
+        box-shadow: 0 0 7px 1px #144e85;
+        transform: translateY(9px);
+    }
+}
+
+.tutorial-tooltip {
+    background: #f4faff !important;
+    border: none !important;
+    animation: flash 1.3s ease 0.4s infinite alternate;
+    .popper__arrow[x-placement=bottom]::after {
+        border-bottom-color: #f4faff !important;
+    }
+    .popper__arrow[x-placement=right]::after {
+        border-right-color: #f4faff !important;
+    }
+    .el-popover__title {
+        font-family: "IBM Plex Sans", sans-serif;
+        font-weight: 500;
+    }
 }

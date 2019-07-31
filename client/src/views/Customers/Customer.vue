@@ -16,7 +16,7 @@
                 <p>{{ customer.billingAddress.country.name }}</p>
             </div>
             <h2>Orders</h2>
-            <OrderTable :ordersRaw="customer.orders">
+            <OrderTable :ordersRaw="customer.orders" />
         </div>
     </div>
 </template>

@@ -176,7 +176,7 @@
                     this.$axios.put("/orders/" + this.orders[this.currentOrder-1]._id, {
                         status: "Awaiting fulfillment"
                     })
-                    .then((res) => {
+                    .then(() => {
                         this.$refs["order-carousel"].prev()
                         this.currentOrder --;
                         this.orders[this.currentOrder].fulfillment.orderStatus = "Awaiting fulfillment"
@@ -194,7 +194,7 @@
                     this.$axios.put("/orders/" + this.orders[this.currentOrder]._id, {
                         status: "Fulfilled"
                     })
-                    .then((res) => {
+                    .then(() => {
                         this.orders[this.currentOrder].fulfillment.orderStatus = "Fulfilled"
                         this.loading = false;
                         window.setTimeout(() => {
@@ -220,8 +220,8 @@
         mounted() {
             this.$emit("set-loading");
             this.$axios.get("/orders/fulfillment")
-            .then((res) => {
-                this.orders = res.data.orders;
+            .then(({data}) => {
+                this.orders = data.orders;
                 this.$emit("stop-loading")
             })
             .catch(() => {

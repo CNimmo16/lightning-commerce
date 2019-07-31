@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Dashboard from './views/Dashboard.vue'
 
+import Dashboard from './views/Dashboard.vue'
+import Login from './views/Login.vue'
 // customer components
 import CustomersMain from './views/Customers/Index.vue'
 import Customer from './views/Customers/Customer.vue'
@@ -23,6 +24,10 @@ import Order from './views/Orders/Order.vue'
 import SetupMain from './views/Setup/Index.vue'
 import ShippingSetup from './views/Setup/Shipping.vue'
 import NewShippingMethod from './views/Setup/NewShippingMethod.vue'
+import CurrencySetup from './views/Setup/Currencies.vue'
+// setup wizard components
+import SetupWizardGateway from './views/Setup/Wizard/1_Gateway.vue'
+import SetupWizardLocales from './views/Setup/Wizard/2_Locales.vue'
 
 Vue.use(Router)
 
@@ -30,6 +35,11 @@ export default new Router({
     mode: 'history',
     base: process.env.BASE_URL,
     routes: [
+        {
+            path: '/login',
+            name: 'login',
+            component: Login
+        },
         {
             path: '/',
             name: 'dashboard',
@@ -118,6 +128,26 @@ export default new Router({
             path: "/setup/shipping/new",
             name: "new-shipping-method",
             component: NewShippingMethod
+        },
+        {
+            path: "/setup/currencies",
+            name: "currency-setup",
+            component: CurrencySetup
+        },
+        // setup wizard routes
+        {
+            path: "/welcome",
+            redirect: "/welcome/payment-provider"
+        },
+        {
+            path: "/welcome/payment-provider",
+            name: "setup-wizard-gateway",
+            component: SetupWizardGateway
+        },
+        {
+            path: "/welcome/locales",
+            name: "setup-wizard-locales",
+            component: SetupWizardLocales
         },
     ],
     methods: {
