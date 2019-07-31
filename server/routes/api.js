@@ -14,8 +14,6 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET);
 module.exports = ({ router }) => {
     // fetch all products, option to filter
     router.get("/products", async (ctx, next) => {
-        console.log("getting products")
-        console.log(ctx.request.query)
         const query = { live: true };
         // if(categories) { query["category.id"] = {$in: categories} }
         // if(priceRange) { query["inventory.price"] = { $gte: priceRange[0], $lte: priceRange[1] } }
@@ -97,6 +95,7 @@ module.exports = ({ router }) => {
     // Price manipulation prevention
     router.post("/orders/validate", async (ctx, next) => {
         const order = ctx.request.fields.order
+        console.log(order)
         const foundIntent = await stripe.paymentIntents.retrieve(order.paymentIntent.id);
         
         // calculate expected cost based on cart items
