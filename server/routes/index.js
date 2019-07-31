@@ -31,36 +31,36 @@ module.exports = ({ router }) => {
         failureRedirect: '/admin/login'
     }))
     
-    router.get("/admin/register", async (ctx, next) => {
-        if(ctx.isAuthenticated()) {
-            ctx.redirect("/admin")
-        } else {
-            const user = await User.findOne()
-            if(user) {
-                ctx.redirect("/admin/login")
-            } else {
-                await send(ctx, './views/register.html');
-            }
-        }
-    })
+    // router.get("/admin/register", async (ctx, next) => {
+    //     if(ctx.isAuthenticated()) {
+    //         ctx.redirect("/admin")
+    //     } else {
+    //         const user = await User.findOne()
+    //         if(user) {
+    //             ctx.redirect("/admin/login")
+    //         } else {
+    //             await send(ctx, './views/register.html');
+    //         }
+    //     }
+    // })
     
-    router.post("/admin/register", async (ctx, next) => {
-        const { score } = validate(ctx.request.fields.password)
-        if(score < 2 || ctx.request.fields.password_confirm !== ctx.request.fields.password || ctx.request.fields.email.indexOf("@") < 0 || ctx.request.fields.email.indexOf(".") < 0) {
-            ctx.redirect("/admin/register")
-        } else {
-            const newUser = await User.create({
-                username: "admin",
-                email: ctx.request.fields.email,
-                isRoot: true,
-                displayName: "Admin"
-            })
-            newUser.password = newUser.generateHash(ctx.request.fields.password);
-            newUser.save()
-            await ctx.login(newUser.id);
-            ctx.redirect("/admin/setup/wizard")
-        }
-    })
+    // router.post("/admin/register", async (ctx, next) => {
+    //     const { score } = validate(ctx.request.fields.password)
+    //     if(score < 2 || ctx.request.fields.password_confirm !== ctx.request.fields.password || ctx.request.fields.email.indexOf("@") < 0 || ctx.request.fields.email.indexOf(".") < 0) {
+    //         ctx.redirect("/admin/register")
+    //     } else {
+    //         const newUser = await User.create({
+    //             username: "admin",
+    //             email: ctx.request.fields.email,
+    //             isRoot: true,
+    //             displayName: "Admin"
+    //         })
+    //         newUser.password = newUser.generateHash(ctx.request.fields.password);
+    //         newUser.save()
+    //         await ctx.login(newUser.id);
+    //         ctx.redirect("/admin/setup/wizard")
+    //     }
+    // })
     
     router.post("/admin/logout", async (ctx, next) => {
         if (ctx.isAuthenticated()) {

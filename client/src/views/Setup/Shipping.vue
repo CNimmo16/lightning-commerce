@@ -48,7 +48,17 @@
                 </template>
             </el-table-column>
         </el-table>
-        <router-link to="/setup/shipping/new"><el-button type="primary">New shipping method</el-button></router-link>
+        <router-link to="/setup/shipping/new">
+            <el-popover
+            placement="right"
+            width="300"
+            popper-class="tutorial-tooltip"
+            trigger="manual"
+            v-model="showGuides"
+            content="Click here to add your first shipping method">
+                <el-button type="primary" slot="reference">New shipping method</el-button>
+            </el-popover>
+        </router-link>
         
         <h2 class="title title--secondary" style="margin: 50px 0 10px 0;">Shipping days</h2>
         <el-form label-position="top">
@@ -75,7 +85,8 @@
             return {
                 shippingDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
                 methods: [],
-                deleting: false
+                deleting: false,
+                showGuides: false
             }
         },
         mounted() {
@@ -83,10 +94,12 @@
             this.$axios.get("/shipping-methods")
             .then((res) => {
                 this.methods = res.data.methods
+                this.showGuides = res.data.methods.length > 0 ? false : true
                 this.$emit("stop-loading")
             })
             .catch(() => {
                 this.$message.error("Failed to load shipping methods. Please contact your system administrator.")
+                this.showGuides = true;
                 this.$emit("stop-loading")
             })
         },

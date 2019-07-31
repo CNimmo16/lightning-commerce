@@ -21,11 +21,9 @@ passport.use(new LocalStrategy({}, (username, password, done) => {
     User.findOne({ username: username })
     .then((user) => {
     if (!user) {
-        console.log("no user")
         return done(null, false);
     }
     if (!user.validPassword(password)) {
-        console.log("passwords don't match")
         return done(null, false);
     } else {
         return done(null, user);

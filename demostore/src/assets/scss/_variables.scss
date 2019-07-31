@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css?family=Amatic+SC|Libre+Baskerville:400,400i|Roboto:300,400,500&display=swap');
+
+$breakpoints: (
+    "small-phone":  430px,
+    "phone":        768px,
+    "large-phone":    948px,
+    "tablet":       1024px,
+    "large-tablet":       1291px,
+    "small-monitor":     1440px,
+    "large-monitor":    1700px
+);
+@mixin mq($width, $type: min) {
+    @if map_has_key($breakpoints, $width) {
+        $width: map_get($breakpoints, $width);
+        @if $type == max {
+            $width: $width - 1px;
+        }
+        @media only screen and (#{$type}-width: $width) {
+            @content;
+        }
+    }
+}
+
+%overlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+// font-family: 'Libre Baskerville', serif;
+// font-family: 'Amatic SC', cursive;

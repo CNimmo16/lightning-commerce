@@ -9,7 +9,7 @@ const cors = require('@koa/cors');
 const fs = require('fs-extra')
 const path = require("path")
 
-const stripe = require('stripe')(process.env.STRIPESECRET);
+const stripe = require('stripe')(process.env.STRIPE_SECRET);
 
 module.exports = ({ router }) => {
     // fetch all products, option to filter

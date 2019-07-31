@@ -35,7 +35,7 @@ const   Router  = require("koa-router"),
 
 // ==== Database Setup ====
     const mongoose = require("mongoose");
-    mongoose.connect(process.env.DATABASE_URL);
+    mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
     let db = mongoose.connection;
     db.on('error', console.error.bind(console, 'connection error:'));
 

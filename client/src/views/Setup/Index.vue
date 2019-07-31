@@ -6,13 +6,22 @@
             <el-row style="max-width: 1200px">
                 <el-col :span="8">
                     <router-link to="/setup/shipping">
-                        <div class="grid-content">
-                            <i class="el-icon-truck"></i>
-                            <div>
-                                Shipping
-                                <p>Manage how you ship orders to customers</p>
+                        <el-popover
+                        placement="bottom"
+                        title="First time here?"
+                        width="250"
+                        popper-class="tutorial-tooltip"
+                        trigger="manual"
+                        v-model="showGuides"
+                        content="Get started by adding a shipping method">
+                            <div class="grid-content" slot="reference">
+                                <i class="el-icon-truck"></i>
+                                <div>
+                                    Shipping
+                                    <p>Manage how you ship orders to customers</p>
+                                </div>
                             </div>
-                        </div>
+                        </el-popover>
                     </router-link>
                 </el-col>
                 
@@ -41,6 +50,30 @@
         </section>
     </div>
 </template>
+
+<script>
+    export default {
+        name: "setup",
+        data() {
+            return {
+                showGuides: false
+            }
+        },
+        mounted() {
+            this.$axios.get("/shipping-methods")
+            .then(({data}) => {
+                if(data.methods.length > 0) {
+                    this.showGuides = false
+                } else {
+                    this.showGuides = true
+                }
+            })
+            .catch(() => {
+                this.showGuides = true;
+            })
+        }
+    }
+</script>
 
 <style lang="scss">
     .grid-content {
