@@ -82,8 +82,8 @@ const   Router  = require("koa-router"),
     
 // ==== Server Initialisation ====
 
-const server = app.listen(process.env.PORT, async() => {
-    console.log(`Example app listening on port ${process.env.PORT}!`);
+const server = app.listen(process.env.PORT || 8080, async() => {
+    console.log(`Example app listening on port ${process.env.PORT || 8080}!`);
     // create setup object if doesn't exist
     const Setup = require(path.join(__dirname, '/models/setup'));
     const setupObject = await Setup.findOne({})
