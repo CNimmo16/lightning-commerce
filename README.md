@@ -1,7 +1,7 @@
 # lightning-commerce
 Lightning Commerce is a working prototype for a blazing fast ecommerce CMS, built on KOA for NodeJS.
 ## Check out the demo
-Check out the demo [here](https://lightning-commerce.herokuapp.com/).
+Check out the demo [here](https://lightning-commerce-demo.herokuapp.com/).
 ## Navigating the demo
 Lightning Commerce is not currently production ready, but the demo gives you a good idea of what it's about and how it works. 
 
